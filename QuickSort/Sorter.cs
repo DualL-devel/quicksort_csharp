@@ -17,15 +17,15 @@ namespace QuickSort
 		private static void ImplArrayQuickSort<T> (ref IList<T> unsorted, int lo, int hi) where T: IComparable
 		{
 			if (lo < hi) {
-				T pivot = unsorted [unsorted.Count / 2];
+				T pivot = unsorted [lo];
 				int l = lo;
 				int h = hi;
 				for (;;) {
-					while (l < h && unsorted [l].CompareTo (pivot) <= 0) {
-						l++;
-					}
 					while (h > l && unsorted [h].CompareTo (pivot) >= 0) {
 						h--;
+					}
+					while (l < h && unsorted [l].CompareTo (pivot) <= 0) {
+						l++;
 					}
 					if (l == h) {
 						break;
@@ -36,13 +36,26 @@ namespace QuickSort
 					}
 				}
 
-				ImplArrayQuickSort (ref unsorted, lo, l);
+				unsorted[lo] = unsorted[l];
+				unsorted[l] = pivot; // unsorted[lo]
+
+				ImplArrayQuickSort (ref unsorted, lo, l - 1);
 				ImplArrayQuickSort (ref unsorted, l + 1, hi);
 			}
 		}
 
+		/*
+naiveQsort :: (Ord a) => [a] -> [a] -- this one beats a black hole at EATING MEMORY!
+naiveQsort [] = []
+naiveQsort [v] = [v]
+naiveQsort (p:vs) = naiveQsort lesser ++ [p] ++ naiveQsort greater
+    where
+        lesser = [ x | x <- vs, x < p ]
+        greater = [ y | y <- vs, y >= p ]
+*/
+		
 		/// <summary>
-		/// The naiveQsort ported from Haskell
+		/// The naiveQsort ported from Haskell.
 		/// </summary>
 		public static IEnumerable<T> NaiveQuickSort<T> (IEnumerable<T> unsorted) where T: IComparable
 		{
